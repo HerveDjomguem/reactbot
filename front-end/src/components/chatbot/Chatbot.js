@@ -29,7 +29,7 @@ class Chatbot extends Component {
       };
   
       this.setState({messages: [...this.state.messages, says]});
-      const res = await axios.post('http://localhost:5000/api/df_text_query', {text: text});
+      const res = await axios.post('/api/df_text_query', {text: text});
      
       console.log('messagse text entré', res.data.fulfillmentMessages)
      
@@ -48,7 +48,7 @@ class Chatbot extends Component {
    }
 
    async df_event_query(event){
-    const res = await axios.post('http://localhost:5000/api/df_event_query', {event:event});
+    const res = await axios.post('/api/df_event_query', {event:event});
    console.log('messagse event', res.data.fulfillmentMessages)
     for (let msg of res.data.fulfillmentMessages){
         let says = {
