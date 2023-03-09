@@ -1,18 +1,10 @@
 {
-  "name": "reactbot",
-  "version": "1.0.0",
-  "description": "React bot for webpage",
-  "main": "server.js",
-  "engines": {
-    "node":"16.13.0",
-    "npm":"8.12.1"
-  },
   "scripts": {
-    "start": "node server.js"
+    "backend": "npm run startdev --prefix back-end",
+    "frontend": "npm run start --prefix front-end",
+    "dev": "concurrently \"npm run frontend\" \"npm run backend\""
   },
-  "author": "Hervé",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.18.2"
+  "devDependencies": {
+    "concurrently": "^7.6.0"
   }
 }

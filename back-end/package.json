@@ -1,0 +1,24 @@
+{
+  "name": "reactbot",
+  "version": "1.0.0",
+  "description": "React bot for webpage",
+  "main": "server.js",
+  "engines": {
+    "node": "16.13.0",
+    "npm": "8.12.1"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "startdev": "nodemon server.js"
+  },
+  "author": "Hervé",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "dialogflow": "^1.2.0",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.21"
+  }
+}
