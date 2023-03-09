@@ -6,8 +6,7 @@ import Shop from './shop/Shop';
 import Header from './Header';
 import Chatbot from './chatbot/Chatbot';
 
-const App = () => {
-    return (
+const App = () => (
         <div>
             <Router>
             <div className='container'>
@@ -22,6 +21,6 @@ const App = () => {
             </Router> 
         </div>
     );
-}
+
 
 export default App;
