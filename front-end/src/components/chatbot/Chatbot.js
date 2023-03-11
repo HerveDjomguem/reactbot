@@ -104,7 +104,7 @@ class Chatbot extends Component {
                    <a href="/" className="btn-floating btn-large waves-effect waves-light red">{message.speaks}</a>
                   </div>
 
-                  <div style={{overflow: 'auto', overflowY: 'scroll'}}>
+                  <div style={{overflow: 'auto'}}>
                      <div style={{height: 300, width: message.msg.payload.fields.cards.listValue.values.length*270}}>
                         {this.renderCards(message.msg.payload.fields.cards.listValue.values)}
                      </div>
@@ -139,10 +139,10 @@ class Chatbot extends Component {
 
     render(){
         return(
-            <div style={{height:400,width:400,position: 'relative', bottom: 0, left:800, border:'1px solid lightgrey'}}>
+            <div style={{height:500,width:400,position:'absolute', bottom: 0, right:0, border:'1px solid lightgrey'}}>
              <nav>
               <div className='nav-wrapper'>
-                 <a className='brand-logo'>ChatBot</a>
+                 <a href='/' className='brand-logo'>ChatBot</a>
               </div>
              </nav>
                <div id="chatbot" style ={{height:388,width:'100%',overflow:'auto'}}>
