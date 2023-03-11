@@ -40,23 +40,28 @@ class Chatbot extends Component {
        };
   
       this.setState({messages: [...this.state.messages, says]});
-      const res = await axios.post('/api/df_text_query', {text: queryText, userID: cookies.get('userID') });
-     
-      console.log('messagse text entré', res.data.fulfillmentMessages)
-     
-      if(res.data.fulfillmentMessages){
-       for (let i=0; i<res.data.fulfillmentMessages.length;i++ ){
-         msg = res.data.fulfillmentMessages[i];
-          console.log(JSON.stringify(msg))
-          says = {
-            speaks : 'bot',
-            msg: msg
-          };
-         console.log('says', says)
-         this.setState({messages: [...this.state.messages, says]}, () =>  console.log('messagse text sorti', this.state));
-        }
-      }
-     
+          const res = await axios.post('/api/df_text_query', {text: queryText, userID: cookies.get('userID') });
+            if(res.data.fulfillmentMessages){
+                msg = res.data.fulfillmentMessages[0];
+                  console.log(JSON.stringify(msg))
+                  says = {
+                    speaks : 'bot',
+                    msg: msg
+                  };
+              
+                let  msg2 = res.data.fulfillmentMessages[1];
+                  console.log(JSON.stringify(msg2))
+                  let  says2 = {
+                    speaks : 'bot',
+                    msg: msg2
+                  };   
+                console.log('says', says)
+                if(says2 !== undefined){
+                  this.setState({messages: [...this.state.messages, says,says2]});
+                  }else{
+                    this.setState({messages: [...this.state.messages, says]});
+                  }      
+            }
    }
 
    async df_event_query(eventName){
@@ -64,15 +69,13 @@ class Chatbot extends Component {
     const res = await axios.post('/api/df_event_query', {event:eventName, userID: cookies.get('userID') });
     let msg, says ={};
    console.log('messagse event entré', res.data.fulfillmentMessages)
-    for (let i=0; i<res.data.fulfillmentMessages.length;i++){
-      msg = res.data.fulfillmentMessages[i];
+      msg = res.data.fulfillmentMessages[0];
        says = {
             speaks : 'bot', 
             msg: msg
         }
         console.log('says event', says)
-        this.setState({messages: [...this.state.messages, says]}, () =>  console.log('messagse event sorti', this.state));
-      }
+        this.setState({messages: [...this.state.messages, says]});
   
    }
 
@@ -136,15 +139,22 @@ class Chatbot extends Component {
 
     render(){
         return(
-            <div style={{height:400,width:400,float: 'right'}}>
-               <div id="chatbot" style ={{height:'100%',width:'100%',overflow:'auto'}}>
-                  <h2>Chatbot</h2>
-                  {this.renderMessages(this.state.messages)}
+            <div style={{height:400,width:400,position: 'relative', bottom: 0, left:800, border:'1px solid lightgrey'}}>
+             <nav>
+              <div className='nav-wrapper'>
+                 <a className='brand-logo'>ChatBot</a>
+              </div>
+             </nav>
+               <div id="chatbot" style ={{height:388,width:'100%',overflow:'auto'}}>
+               
+                   {this.renderMessages(this.state.messages)}
                   <div ref={(el) => {this.messagesEnd = el;}}
                       style={{ float: 'left', clear:'both'}}>
                   </div>
-                  <input type="text" onKeyPress={this._handleInputKeyPress}/>
                </div> 
+               <div className='s12'>
+               <input style={{margin: 0, paddingLeft:'1%', paddingRight:'1%', width:'98%'}} placeholder='Saisir un message:' type="text" ref={(input)=> {this.talkInput = input;}} onKeyPress={this._handleInputKeyPress}/>
+               </div>
             </div>
         )
     }
