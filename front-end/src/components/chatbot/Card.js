@@ -5,8 +5,6 @@ const Card =(props) => {
     <div style={{ float: 'left', paddingRight:30, width:270}}>
          <div className="card">
         <div className="card-image" style={{width: 240}}>
-             {console.log('props1',props.payload)}
-             {console.log('props2',props.payload)}  
           <img  alt={props.payload.fields.header.stringValue} src="front-end/src/components/chatbot/laptop.jpg" />
           <span className="card-title">{props.payload.fields.header.stringValue}</span>
         </div>

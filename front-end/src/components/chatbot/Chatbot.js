@@ -6,16 +6,19 @@ import {v4 as uuid} from 'uuid';
 
 import Message from './Message';
 import Card from './Card';
+import QuickReplies from './QuickReplies';
 
 const cookies = new Cookies();
 
 class Chatbot extends Component {
    messagesEnd;
+   talkInput;
+
    constructor(props){
     super(props);
-
-
+    // Le binding es necessaire pour que la méthode 'this' marche sur le 'callback'
     this._handleInputKeyPress = this._handleInputKeyPress.bind(this);
+    this._handleQuickReplyPayload =this._handleQuickReplyPayload.bind(this);
     this.state ={
         messages: []
     };
@@ -43,24 +46,33 @@ class Chatbot extends Component {
           const res = await axios.post('/api/df_text_query', {text: queryText, userID: cookies.get('userID') });
             if(res.data.fulfillmentMessages){
                 msg = res.data.fulfillmentMessages[0];
-                  console.log(JSON.stringify(msg))
+                 console.log('moi',res.data.fulfillmentMessages)
                   says = {
                     speaks : 'bot',
                     msg: msg
                   };
               
                 let  msg2 = res.data.fulfillmentMessages[1];
-                  console.log(JSON.stringify(msg2))
+                 // console.log(JSON.stringify(msg2))
                   let  says2 = {
                     speaks : 'bot',
                     msg: msg2
                   };   
-                console.log('says', says)
-                if(says2 !== undefined){
-                  this.setState({messages: [...this.state.messages, says,says2]});
+                  let  msg3 = res.data.fulfillmentMessages[2];
+                  console.log('msg3',msg3)
+                   let  says3 = {
+                     speaks : 'bot',
+                     msg: msg3                     
+                   }; 
+                    
+               // console.log('says', says)
+                if(says3 !== undefined){
+                  this.setState({messages: [...this.state.messages, says,says2,says3]});
+                  }else if( says2 !== undefined){
+                    this.setState({messages: [...this.state.messages, says, says2 ]});
                   }else{
                     this.setState({messages: [...this.state.messages, says]});
-                  }      
+                  }     
             }
    }
 
@@ -68,13 +80,13 @@ class Chatbot extends Component {
     
     const res = await axios.post('/api/df_event_query', {event:eventName, userID: cookies.get('userID') });
     let msg, says ={};
-   console.log('messagse event entré', res.data.fulfillmentMessages)
+   //console.log('messagse event entré', res.data.fulfillmentMessages)
       msg = res.data.fulfillmentMessages[0];
        says = {
             speaks : 'bot', 
             msg: msg
         }
-        console.log('says event', says)
+      //  console.log('says event', says)
         this.setState({messages: [...this.state.messages, says]});
   
    }
@@ -86,6 +98,14 @@ class Chatbot extends Component {
    componentDidUpdate(){
        this.messagesEnd.scrollIntoView({ behaviour: 'smooth'});
    };
+
+   _handleQuickReplyPayload(event, payload, text){
+       event.preventDefault();
+       event.stopPropagation();
+
+       this.df_text_query(text);
+
+   }
 
    renderCards(cards){
        return cards.map((card, i) => <Card key={i} payload={card.structValue} />)
@@ -99,8 +119,9 @@ class Chatbot extends Component {
             <div key={i}>
                 <div className='card-panel grey lighten-5 z-depth-1'>
                   <div style={{ overflow: 'hidden'}}>
-
+                     
                   <div className="col s2">
+                  
                    <a href="/" className="btn-floating btn-large waves-effect waves-light red">{message.speaks}</a>
                   </div>
 
@@ -114,12 +135,25 @@ class Chatbot extends Component {
                 </div>
            </div>
            );
-    }
+        } else if(message.msg &&
+          message.msg.payload &&
+          message.msg.payload.fields &&
+          message.msg.payload.fields.quick_replies
+            ){
+              
+                return( <QuickReplies
+                text = {message.msg.payload.fields.text ? message.msg.payload.fields.text: null}
+                key={i} 
+                replyClick={this._handleQuickReplyPayload}
+                speaks={message.speaks}
+                payload={message.msg.payload.fields.quick_replies.listValue.values}
+                />)
+            }
    };
 
    renderMessages(stateMessages){
     if(stateMessages){
-      console.log('setmessages', stateMessages)
+      //console.log('setmessages', stateMessages)
         return stateMessages.map((message, i) =>{
            return this.renderOneMessage(message,i)
         });
