@@ -19,8 +19,13 @@ class Chatbot extends Component {
     // Le binding es necessaire pour que la méthode 'this' marche sur le 'callback'
     this._handleInputKeyPress = this._handleInputKeyPress.bind(this);
     this._handleQuickReplyPayload =this._handleQuickReplyPayload.bind(this);
+
+    this.hide = this.hide.bind(this);
+    this.show = this.show.bind(this);
+
     this.state ={
-        messages: []
+        messages: [],
+        showBot: true
     };
 
     //cookie accesible sur toutes les pages
@@ -93,17 +98,44 @@ class Chatbot extends Component {
 
    componentDidMount(){
      this.df_event_query('Welcome');
+    
    };
    
    componentDidUpdate(){
        this.messagesEnd.scrollIntoView({ behaviour: 'smooth'});
+      if(this.talkInput){
+        this.talkInput.focus();
+      }
+  
    };
+
+   show(event){
+    event.preventDefault();
+    event.stopPropagation();
+     this.setState({showBot: true});
+ 
+   }
+
+   hide(event){
+    event.preventDefault();
+    event.stopPropagation();
+    this.setState({showBot: false});
+ 
+  }
 
    _handleQuickReplyPayload(event, payload, text){
        event.preventDefault();
        event.stopPropagation();
 
-       this.df_text_query(text);
+       switch (payload){
+        case 'training_masterclass':
+          this.df_event_query('MASTERCLASS');
+        break;
+        default:
+          this.df_text_query(text);
+       
+       }
+      
 
    }
 
@@ -172,11 +204,15 @@ class Chatbot extends Component {
    }
 
     render(){
+      if(this.state.showBot){
         return(
             <div style={{height:500,width:400,position:'absolute', bottom: 0, right:0, border:'1px solid lightgrey'}}>
              <nav>
               <div className='nav-wrapper'>
                  <a href='/' className='brand-logo'>ChatBot</a>
+                 <ul id='nav-mobile' className='right hide-on-med-and-down'>
+                  <li><a href='/' onClick={this.hide}>Fermer</a></li>
+                 </ul>
               </div>
              </nav>
                <div id="chatbot" style ={{height:388,width:'100%',overflow:'auto'}}>
@@ -190,8 +226,25 @@ class Chatbot extends Component {
                <input style={{margin: 0, paddingLeft:'1%', paddingRight:'1%', width:'98%'}} placeholder='Saisir un message:' type="text" ref={(input)=> {this.talkInput = input;}} onKeyPress={this._handleInputKeyPress}/>
                </div>
             </div>
-        )
+        );
+    }else {
+      return(
+        <div style={{height:40,width:400,position:'absolute', bottom: 0, right:0, border:'1px solid lightgrey'}}>
+         <nav>
+          <div className='nav-wrapper'>
+             <a href='/' className='brand-logo'>ChatBot</a>
+             <ul id='nav-mobile' className='right hide-on-med-and-down'>
+                  <li><a href='/' onClick={this.show}>Ouvrir</a></li>
+                 </ul>
+          </div>
+         </nav>
+         <div ref={(el) => {this.messagesEnd = el;}}
+                      style={{ float: 'left', clear:'both'}}>
+                  </div>
+        </div>
+      );
     }
+  }
 }
 
 export default Chatbot;
