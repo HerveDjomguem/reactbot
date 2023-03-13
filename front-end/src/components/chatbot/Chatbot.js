@@ -26,7 +26,7 @@ class Chatbot extends Component {
 
     this.state ={
         messages: [],
-        showBot: true,
+        showBot: false,
     };
 
     //cookie accesible sur toutes les pages
