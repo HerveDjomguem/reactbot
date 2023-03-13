@@ -5,9 +5,10 @@ import ItemList from './ItemList';
 const Shop = () =>{
     return (
         <div>
-            <h2>Boutique</h2>
+            <h2> <a href='/shop'>Boutique</a></h2>
            <ItemList/>
         </div>
+        
     )
 }
 

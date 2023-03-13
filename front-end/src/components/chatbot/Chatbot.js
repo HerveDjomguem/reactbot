@@ -1,6 +1,7 @@
 //chatbot(causer avec un robot)
 import React, {Component} from 'react';
 import axios from 'axios';
+
 import Cookies from 'universal-cookie';
 import {v4 as uuid} from 'uuid';
 
@@ -25,7 +26,7 @@ class Chatbot extends Component {
 
     this.state ={
         messages: [],
-        showBot: true
+        showBot: true,
     };
 
     //cookie accesible sur toutes les pages
@@ -79,27 +80,65 @@ class Chatbot extends Component {
                     this.setState({messages: [...this.state.messages, says]});
                   }     
             }
+            await this.resolveAfterXSeconds(1);
    }
 
    async df_event_query(eventName){
-    
     const res = await axios.post('/api/df_event_query', {event:eventName, userID: cookies.get('userID') });
-    let msg, says ={};
-   //console.log('messagse event entré', res.data.fulfillmentMessages)
-      msg = res.data.fulfillmentMessages[0];
-       says = {
-            speaks : 'bot', 
-            msg: msg
-        }
-      //  console.log('says event', says)
-        this.setState({messages: [...this.state.messages, says]});
+        if(res.data.fulfillmentMessages){
+          let  msg = res.data.fulfillmentMessages[0];
+          console.log('moi',res.data.fulfillmentMessages)
+          let   says = {
+              speaks : 'bot',
+              msg: msg
+            };
+        
+          let  msg2 = res.data.fulfillmentMessages[1];
+          // console.log(JSON.stringify(msg2))
+            let  says2 = {
+              speaks : 'bot',
+              msg: msg2
+            };   
+            let  msg3 = res.data.fulfillmentMessages[2];
+            console.log('msg3',msg3)
+            let  says3 = {
+              speaks : 'bot',
+              msg: msg3                     
+            }; 
+              
+        // console.log('says', says)
+          if(says3 !== undefined){
+            this.setState({messages: [...this.state.messages, says,says2,says3]});
+            }else if( says2 !== undefined){
+              this.setState({messages: [...this.state.messages, says, says2 ]});
+            }else{
+              this.setState({messages: [...this.state.messages, says]});
+            }     
+      }
+      await this.resolveAfterXSeconds(1);
   
+   };
+
+   resolveAfterXSeconds(X){
+    return new Promise (resolve =>{
+        setTimeout(()=>{
+          resolve(X);
+        }, X*1000);
+    })
+    
    }
 
-   componentDidMount(){
+   async componentDidMount(){
      this.df_event_query('Welcome');
+     await this.resolveAfterXSeconds(1);
+     if(window.location.pathname ==='/shop' ){
+      await this.resolveAfterXSeconds(1);
+      this.df_event_query('WELCOME_SHOP');
+      this.setState({ showBot: true});
+     }
     
    };
+
    
    componentDidUpdate(){
        this.messagesEnd.scrollIntoView({ behaviour: 'smooth'});
@@ -128,6 +167,9 @@ class Chatbot extends Component {
        event.stopPropagation();
 
        switch (payload){
+        case 'recommend_yes':
+          this.df_event_query('SHOW_RECOMMENDATIONS');
+          break;
         case 'training_masterclass':
           this.df_event_query('MASTERCLASS');
         break;
@@ -229,12 +271,11 @@ class Chatbot extends Component {
         );
     }else {
       return(
-        <div style={{height:40,width:400,position:'absolute', bottom: 0, right:0, border:'1px solid lightgrey'}}>
+        <div style={{height:80,width:80,position:'absolute', bottom: 0, right:25, border:'1px solid lightgrey'}}>
          <nav>
           <div className='nav-wrapper'>
-             <a href='/' className='brand-logo'>ChatBot</a>
              <ul id='nav-mobile' className='right hide-on-med-and-down'>
-                  <li><a href='/' onClick={this.show}>Ouvrir</a></li>
+                  <li><a href='/' onClick={this.show}>ChatBot</a></li>
                  </ul>
           </div>
          </nav>
